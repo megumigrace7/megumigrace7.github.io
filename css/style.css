@@ -236,7 +236,7 @@ section.hero {
 /* プロフィール画像の親枠 */
 .profile-img {
     width: 100%;
-    max-width: 450px; /* PCなど大画面で大きくなりすぎるのを防ぐサイズ制限（お好みで調整可） */
+    max-width: 450px; /* PCなど大画面で大きくなりすぎるのを防ぐサイズ制限 */
     margin: 0 auto;   /* 中央寄せ */
 }
 
@@ -245,36 +245,12 @@ section.hero {
     width: 100%;             /* 親枠の幅いっぱいに広げる */
     height: auto;            /* 縦横比（アスペクト比）を維持して自動伸縮 */
     display: block;          /* 画像下の余白を消去 */
-    border-radius: 16px;     /* 角丸（スタイリッシュに見せるための装飾） */
+    border-radius: 16px;     /* 角丸 */
     box-shadow: 0 10px 30px rgba(0, 119, 255, 0.12); /* 柔らかい影 */
 }
 
 .profile-img.animated img {
     animation: popAndBounce 1.2s cubic-bezier(0.28, 0.84, 0.42, 1) forwards;
-}
-
-@keyframes popAndBounce {
-    0% {
-        opacity: 0;
-        transform: translateY(60px) scale(0.9);
-    }
-    40% {
-        opacity: 1;
-        transform: translateY(0) scale(1.05);
-    }
-    55% {
-        transform: translateY(-12px) scale(0.98);
-    }
-    70% {
-        transform: translateY(0) scale(1.02);
-    }
-    85% {
-        transform: translateY(-4px) scale(0.99);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
 }
 
 /* グリッドレイアウト & カード */
@@ -285,9 +261,7 @@ section.hero {
 .music-grid, .video-grid {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
-.gallery-grid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-}
+
 .card {
     background: #ffffff;
     padding: 15px;
@@ -417,7 +391,6 @@ section.hero {
     }
     section.hero {
         padding-top: 60px !important;
-        padding-bottom: 0 !important;
     }
 }
 
@@ -463,23 +436,23 @@ section.hero {
 }
 
 /* ==========================================
-   ギャラリーセクション（幅統一版）
+   ギャラリーセクション（幅統一・スマホ3列・全画面モーダル統合版）
    ========================================== */
 
-/* セクション全体の最大幅を他と統一（例: 1000px または 1100px） */
+/* セクション全体の幅をプロフィール等と統一 */
 .gallery-section {
-    max-width: 1100px; /* プロフィールやミュージックの最大幅と合わせます */
+    max-width: 1100px;
     width: 100%;
     margin: 0 auto;
-    padding: 0 20px; /* スマホ時の左右余白 */
+    padding: 0 20px;
     box-sizing: border-box;
 }
 
 /* 3x3 グリッドの配置 */
 .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3列均等割り */
-    gap: 20px; /* 画像同士の間隔 */
+    grid-template-columns: repeat(3, 1fr); /* 常に3列指定 */
+    gap: 18px; /* PCでの画像同士の間隔 */
     width: 100%;
     margin: 0 auto;
     box-sizing: border-box;
@@ -514,14 +487,71 @@ section.hero {
     transform: scale(1.08);
 }
 
-/* モバイル表示（スマホでは2列にして見やすく） */
+/* スマホ表示時（768px以下）：3列を保持したまま隙間を最適化 */
 @media (max-width: 768px) {
     .gallery-section {
-        padding: 0 16px;
+        padding: 0 10px;
     }
     
     .gallery-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
+        grid-template-columns: repeat(3, 1fr) !important; /* スマホでも3列維持 */
+        gap: 6px !important; /* スマホ用に隙間を詰めて大きく表示 */
     }
+}
+
+/* ==========================================
+   フルスクリーン（画面いっぱい）ライトボックス
+   ========================================== */
+.lightbox {
+    display: none;
+    position: fixed;
+    z-index: 999999; /* 最前面 */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(8px);
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.lightbox.is-open {
+    display: flex;
+    opacity: 1;
+}
+
+/* 画像を画面枠いっぱいに広げる設定 */
+.lightbox img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain; /* 縦横比を崩さず全画面フィット */
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+    transform: scale(0.9);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.lightbox.is-open img {
+    transform: scale(1); /* ポップにバウンス拡大 */
+}
+
+/* 閉じるボタン */
+.lightbox-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: #ffffff;
+    font-size: 38px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1000000;
+    line-height: 1;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
 }
