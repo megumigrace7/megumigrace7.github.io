@@ -115,13 +115,47 @@
     </div>
 </section>
 
-        <section id="gallery" class="section gallery scroll-trigger">
-            <h2 class="section-title">GALLERY</h2>
-            <div class="grid gallery-grid">
-                <div class="placeholder-img">PHOTO 1</div>
-                <div class="placeholder-img">PHOTO 2</div>
-            </div>
-        </section>
+<!-- ギャラリーセクション -->
+<section class="gallery-section">
+    <h2 class="section-title">GALLERY</h2>
+    
+    <!-- 3x3 グリッド -->
+    <div class="gallery-grid">
+        <div class="gallery-item" onclick="openLightbox('images/photo1.jpg')">
+            <img src="images/gallery/photo1.jpg" alt="Gallery 1">
+        </div>
+        <div class="gallery-item" onclick="openLightbox('images/photo2.jpg')">
+            <img src="images/gallery/photo2.jpg" alt="Gallery 2">
+        </div>
+        <div class="gallery-item" onclick="openLightbox('images/photo3.jpg')">
+            <img src="images/gallery/photo3.jpg" alt="Gallery 3">
+        </div>
+        <div class="gallery-item" onclick="openLightbox('images/photo4.jpg')">
+            <img src="images/gallery/photo4.jpg" alt="Gallery 4">
+        </div>
+        <div class="gallery-item" onclick="openLightbox('images/photo5.jpg')">
+            <img src="images/gallery/photo5.jpg" alt="Gallery 5">
+        </div>
+        <div class="gallery-item" onclick="openLightbox('images/photo6.jpg')">
+            <img src="images/gallery/photo6.jpg" alt="Gallery 6">
+        </div>
+        <div class="gallery-item" onclick="openLightbox('images/photo7.jpg')">
+            <img src="images/gallery/photo7.jpg" alt="Gallery 7">
+        </div>
+        <div class="gallery-item" onclick="openLightbox('images/photo8.jpg')">
+            <img src="images/gallery/photo8.jpg" alt="Gallery 8">
+        </div>
+        <div class="gallery-item" onclick="openLightbox('images/photo9.jpg')">
+            <img src="images/gallery/photo9.jpg" alt="Gallery 9">
+        </div>
+    </div>
+</section>
+
+<!-- 拡大表示用モーダル（ライトボックス） -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <span class="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="拡大画像">
+</div>
 
         <section id="news" class="section news scroll-trigger">
             <h2 class="section-title">NEWS</h2>
@@ -169,13 +203,15 @@
             event.target.playVideo();
         }
 
-        // 2. Swiper 初期化
+        // DOM構築完了後の処理
         document.addEventListener('DOMContentLoaded', () => {
+            
+            // 2. Swiper 初期化
             heroSwiper = new Swiper('.hero-slider', {
                 loop: false,     // クローン生成によるYouTubeエラーを防ぐためfalse
                 rewind: true,    // 2枚目から右を押すと滑らかに1枚目に戻る
                 speed: 800,
-                autoHeight: true, // ★追加：スライドの高さ固定（100vh等）による動画見切れを防ぎ、高さ可変にする
+                autoHeight: true, // スライドの高さ固定（100vh等）による動画見切れを防ぎ、高さ可変にする
                 autoplay: {
                     delay: 7000,
                     disableOnInteraction: false,
@@ -194,12 +230,38 @@
                 on: {
                     slideChangeTransitionEnd: function () {
                         if (this.updateAutoHeight) {
-                            this.updateAutoHeight(); // ★追加：スライド切り替え時に高さを自動更新
+                            this.updateAutoHeight(); // スライド切り替え時に高さを自動更新
                         }
                         updateSlideState();
                     }
                 }
             });
+
+            // 3. スクロール検知で「ぼよんぼよん」アニメーションを発火させる設定
+            const targets = document.querySelectorAll(
+                '.section-title, .profile-text, .profile-img, .card, .news-list li, .social-links a'
+            );
+
+            // 対象要素に初期クラスを自動付与
+            targets.forEach(target => {
+                target.classList.add('scroll-bounce');
+            });
+
+            // スクロール監視（画面内に見えたらアニメーションクラスを付与）
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target); // 一度発火したら監視解除
+                    }
+                });
+            }, {
+                threshold: 0.15, // 要素の15%が見えたら発火
+                rootMargin: '0px 0px -40px 0px' // 少し画面に入ってから発火
+            });
+
+            // 全対象の監視を開始
+            targets.forEach(target => observer.observe(target));
         });
 
         // スライド切り替え時の動画再生制御

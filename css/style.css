@@ -391,30 +391,137 @@ section.hero {
 }
 
 /* ==========================================
-   セクション間の余白調整
+   セクション余白調整（アニメーション保護版）
    ========================================== */
 section {
-    padding-top: 40px !important;    /* セクション内の上余白（旧: 80px〜100px等から短縮） */
-    padding-bottom: 40px !important; /* セクション内の下余白 */
-    margin-top: 0 !important;        /* 外側の上余白をリセット */
-    margin-bottom: 0 !important;     /* 外側の下余白をリセット */
+    padding-top: 40px !important;
+    padding-bottom: 40px !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    
+    /* アニメーションの描画・動的変化を妨げないための設定 */
+    position: relative;
+    overflow: visible !important; /* はみ出しアニメーションのカットを防止 */
 }
 
-/* 最初のセクション（ヒーローエリア）のみヘッダー被り防止のため上余白を維持 */
+/* ヒーローセクションの設定維持 */
 section.hero {
     padding-top: 80px !important;
     padding-bottom: 0 !important;
 }
 
 @media (max-width: 768px) {
-    /* スマホ表示ではさらに余白をギュッと詰める */
     section {
         padding-top: 25px !important;
         padding-bottom: 25px !important;
     }
-    
     section.hero {
         padding-top: 60px !important;
         padding-bottom: 0 !important;
+    }
+}
+
+/* ==========================================
+   スクロール発火の「ぼよんぼよん」アニメーション
+   ========================================== */
+
+/* 1. アニメーションを適用したい要素の初期状態（透明・下に少し下がった状態） */
+.scroll-bounce {
+    opacity: 0;
+    transform: translateY(50px) scale(0.9);
+    will-change: opacity, transform;
+}
+
+/* 2. 画面内に入った時に付与されるクラス（バウンスアニメーション実行） */
+.scroll-bounce.is-visible {
+    animation: popAndBounce 1.0s cubic-bezier(0.28, 0.84, 0.42, 1) forwards;
+}
+
+/* ぼよんぼよんの跳ね返りキーフレーム */
+@keyframes popAndBounce {
+    0% {
+        opacity: 0;
+        transform: translateY(50px) scale(0.9);
+    }
+    40% {
+        opacity: 1;
+        transform: translateY(0) scale(1.05); /* 少し膨らんで飛び出す */
+    }
+    55% {
+        transform: translateY(-10px) scale(0.98); /* 軽ーく沈む */
+    }
+    70% {
+        transform: translateY(0) scale(1.02); /* わずかに跳ね返る */
+    }
+    85% {
+        transform: translateY(-3px) scale(0.99);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1); /* ピタッと着地 */
+    }
+}
+
+/* ==========================================
+   ギャラリーセクション（幅統一版）
+   ========================================== */
+
+/* セクション全体の最大幅を他と統一（例: 1000px または 1100px） */
+.gallery-section {
+    max-width: 1100px; /* プロフィールやミュージックの最大幅と合わせます */
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 20px; /* スマホ時の左右余白 */
+    box-sizing: border-box;
+}
+
+/* 3x3 グリッドの配置 */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3列均等割り */
+    gap: 20px; /* 画像同士の間隔 */
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* サムネイル枠 */
+.gallery-item {
+    position: relative;
+    aspect-ratio: 1 / 1; /* 正方形に統一 */
+    overflow: hidden;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+/* ホバー時のバウンス演出 */
+.gallery-item:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 12px 25px rgba(0, 119, 255, 0.2);
+}
+
+.gallery-item:hover img {
+    transform: scale(1.08);
+}
+
+/* モバイル表示（スマホでは2列にして見やすく） */
+@media (max-width: 768px) {
+    .gallery-section {
+        padding: 0 16px;
+    }
+    
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
     }
 }
