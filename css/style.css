@@ -425,16 +425,16 @@ section.hero {
    スクロール発火の「ぼよんぼよん」アニメーション
    ========================================== */
 
-/* 1. アニメーションを適用したい要素の初期状態（透明・下に少し下がった状態） */
+/* アニメーション初期状態（時間差の反映を許可） */
 .scroll-bounce {
     opacity: 0;
     transform: translateY(50px) scale(0.9);
     will-change: opacity, transform;
 }
 
-/* 2. 画面内に入った時に付与されるクラス（バウンスアニメーション実行） */
 .scroll-bounce.is-visible {
-    animation: popAndBounce 1.0s cubic-bezier(0.28, 0.84, 0.42, 1) forwards;
+    /* animation-delay は JavaScript 側で動的に指定された数値を使用 */
+    animation: popAndBounce 0.9s cubic-bezier(0.28, 0.84, 0.42, 1) forwards;
 }
 
 /* ぼよんぼよんの跳ね返りキーフレーム */

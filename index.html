@@ -238,31 +238,37 @@
             });
 
             // 3. スクロール検知で「ぼよんぼよん」アニメーションを発火させる設定
-            const targets = document.querySelectorAll(
-                '.section-title, .profile-text, .profile-img, .card, .news-list li, .social-links a'
-            );
+const targets = document.querySelectorAll(
+    '.section-title, .profile-text, .profile-img, .card, .news-list li, .social-links a, .gallery-item'
+);
 
-            // 対象要素に初期クラスを自動付与
-            targets.forEach(target => {
-                target.classList.add('scroll-bounce');
-            });
+// 全対象要素に初期クラスを付与
+targets.forEach(target => {
+    target.classList.add('scroll-bounce');
+});
 
-            // スクロール監視（画面内に見えたらアニメーションクラスを付与）
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                        observer.unobserve(entry.target); // 一度発火したら監視解除
-                    }
-                });
-            }, {
-                threshold: 0.15, // 要素の15%が見えたら発火
-                rootMargin: '0px 0px -40px 0px' // 少し画面に入ってから発火
-            });
+// ギャラリーグリッド内のアイテムに順番（インデックス）をセットして時間差を作る
+const galleryItems = document.querySelectorAll('.gallery-grid .gallery-item');
+galleryItems.forEach((item, index) => {
+    // 0.08秒ずつずらして順番にボヨンボヨンさせる設定
+    item.style.animationDelay = `${(index % 3) * 0.12 + Math.floor(index / 3) * 0.15}s`;
+});
 
-            // 全対象の監視を開始
-            targets.forEach(target => observer.observe(target));
-        });
+// スクロール監視（画面内に見えたらアニメーション発火）
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target); // 一度発火したら監視解除
+        }
+    });
+}, {
+    threshold: 0.1, // 10%見えたら少し早めに発火
+    rootMargin: '0px 0px -30px 0px'
+});
+
+// 全対象の監視を開始
+targets.forEach(target => observer.observe(target));
 
         // スライド切り替え時の動画再生制御
         function updateSlideState() {
