@@ -233,22 +233,20 @@ section.hero {
     margin-bottom: 15px;
 }
 
+/* プロフィール画像の親枠 */
 .profile-img {
-    flex: 1 1 300px;
-    max-width: 450px;
     width: 100%;
-    margin: 0 auto;
-    box-sizing: border-box;
+    max-width: 450px; /* PCなど大画面で大きくなりすぎるのを防ぐサイズ制限（お好みで調整可） */
+    margin: 0 auto;   /* 中央寄せ */
 }
+
+/* 画像本体：レスポンシブ（可変）設定 */
 .profile-img img {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    display: block !important;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 119, 255, 0.12);
-    box-sizing: border-box;
-    opacity: 0;
+    width: 100%;             /* 親枠の幅いっぱいに広げる */
+    height: auto;            /* 縦横比（アスペクト比）を維持して自動伸縮 */
+    display: block;          /* 画像下の余白を消去 */
+    border-radius: 16px;     /* 角丸（スタイリッシュに見せるための装飾） */
+    box-shadow: 0 10px 30px rgba(0, 119, 255, 0.12); /* 柔らかい影 */
 }
 
 .profile-img.animated img {
