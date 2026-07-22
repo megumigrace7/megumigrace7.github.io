@@ -178,160 +178,172 @@
         <p>&copy; 2026 ARTIST NAME. All Rights Reserved.</p>
     </footer>
 <!-- Swiper JS -->
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-    <!-- YouTube IFrame API -->
-    <script src="https://www.youtube.com/iframe_api"></script>
+<!-- YouTube IFrame API -->
+<script src="https://www.youtube.com/iframe_api"></script>
 
-    <script>
-        let isGlobalUnmuted = false;
-        const players = {};
-        let heroSwiper;
+<script>
+    let isGlobalUnmuted = false;
+    const players = {};
+    let heroSwiper;
 
-        // 1. YouTube API Ready
-        function onYouTubeIframeAPIReady() {
-            players['player1'] = new YT.Player('player1', {
-                events: { 'onReady': onPlayerReady }
-            });
-            players['player2'] = new YT.Player('player2', {
-                events: { 'onReady': onPlayerReady }
-            });
-        }
+    // 1. YouTube API Ready
+    function onYouTubeIframeAPIReady() {
+        players['player1'] = new YT.Player('player1', {
+            events: { 'onReady': onPlayerReady }
+        });
+        players['player2'] = new YT.Player('player2', {
+            events: { 'onReady': onPlayerReady }
+        });
+    }
 
-        function onPlayerReady(event) {
-            event.target.mute();
-            event.target.playVideo();
-        }
+    function onPlayerReady(event) {
+        event.target.mute();
+        event.target.playVideo();
+    }
 
-        // DOM構築完了後の処理
-        document.addEventListener('DOMContentLoaded', () => {
-            
-            // 2. Swiper 初期化
-            heroSwiper = new Swiper('.hero-slider', {
-                loop: false,     // クローン生成によるYouTubeエラーを防ぐためfalse
-                rewind: true,    // 2枚目から右を押すと滑らかに1枚目に戻る
-                speed: 800,
-                autoHeight: true, // スライドの高さ固定（100vh等）による動画見切れを防ぎ、高さ可変にする
-                autoplay: {
-                    delay: 7000,
-                    disableOnInteraction: false,
-                },
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                },
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                },
-                touchStartPreventDefault: false,
-                passiveListeners: true,
+    // DOM構築完了後の処理
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // 2. Swiper 初期化
+        heroSwiper = new Swiper('.hero-slider', {
+            loop: false,
+            rewind: true,
+            speed: 800,
+            autoHeight: true,
+            autoplay: {
+                delay: 7000,
+                disableOnInteraction: false,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            touchStartPreventDefault: false,
+            passiveListeners: true,
 
-                on: {
-                    slideChangeTransitionEnd: function () {
-                        if (this.updateAutoHeight) {
-                            this.updateAutoHeight(); // スライド切り替え時に高さを自動更新
-                        }
-                        updateSlideState();
+            on: {
+                slideChangeTransitionEnd: function () {
+                    if (this.updateAutoHeight) {
+                        this.updateAutoHeight();
                     }
+                    updateSlideState();
+                }
+            }
+        });
+
+        // 3. スクロールアニメーション（ボヨンボヨン）の設定
+        const targets = document.querySelectorAll(
+            '.section-title, .profile-text, .profile-img, .card, .news-list li, .social-links a, .gallery-item'
+        );
+
+        // 対象要素に初期クラスを自動付与
+        targets.forEach(target => {
+            target.classList.add('scroll-bounce');
+        });
+
+        // ギャラリー画像だけ時間差（ディレイ）をつける
+        const galleryItems = document.querySelectorAll('.gallery-grid .gallery-item');
+        galleryItems.forEach((item, index) => {
+            item.style.transitionDelay = `${(index % 3) * 0.1 + Math.floor(index / 3) * 0.1}s`;
+        });
+
+        // スクロール監視（画面内に入ったら表示）
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target); // 1度アニメーションしたら監視解除
                 }
             });
+        }, {
+            threshold: 0.1, // 10%見えたら発火
+            rootMargin: '0px 0px -20px 0px'
+        });
 
-            // 3. スクロール検知で「ぼよんぼよん」アニメーションを発火させる設定
-const targets = document.querySelectorAll(
-    '.section-title, .profile-text, .profile-img, .card, .news-list li, .social-links a, .gallery-item'
-);
-
-// 全対象要素に初期クラスを付与
-targets.forEach(target => {
-    target.classList.add('scroll-bounce');
-});
-
-// ギャラリーグリッド内のアイテムに順番（インデックス）をセットして時間差を作る
-const galleryItems = document.querySelectorAll('.gallery-grid .gallery-item');
-galleryItems.forEach((item, index) => {
-    // 0.08秒ずつずらして順番にボヨンボヨンさせる設定
-    item.style.animationDelay = `${(index % 3) * 0.12 + Math.floor(index / 3) * 0.15}s`;
-});
-
-// スクロール監視（画面内に見えたらアニメーション発火）
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            observer.unobserve(entry.target); // 一度発火したら監視解除
-        }
+        // 監視を開始
+        targets.forEach(target => observer.observe(target));
     });
-}, {
-    threshold: 0.1, // 10%見えたら少し早めに発火
-    rootMargin: '0px 0px -30px 0px'
-});
 
-// 全対象の監視を開始
-targets.forEach(target => observer.observe(target));
+    // スライド切り替え時の動画再生制御
+    function updateSlideState() {
+        if (!heroSwiper) return;
 
-        // スライド切り替え時の動画再生制御
-        function updateSlideState() {
-            if (!heroSwiper) return;
+        Object.keys(players).forEach(id => {
+            if (players[id] && typeof players[id].pauseVideo === 'function') {
+                players[id].pauseVideo();
+            }
+        });
 
-            // 全プレイヤーを一旦停止
-            Object.keys(players).forEach(id => {
-                if (players[id] && typeof players[id].pauseVideo === 'function') {
-                    players[id].pauseVideo();
-                }
-            });
+        const activeIndex = heroSwiper.activeIndex;
+        const activePlayerId = 'player' + (activeIndex + 1);
+        const activePlayer = players[activePlayerId];
 
-            // 現在表示されているスライドのプレイヤーを取得
-            const activeIndex = heroSwiper.activeIndex;
-            const activePlayerId = 'player' + (activeIndex + 1);
-            const activePlayer = players[activePlayerId];
+        if (activePlayer && typeof activePlayer.playVideo === 'function') {
+            if (isGlobalUnmuted) {
+                activePlayer.unMute();
+            } else {
+                activePlayer.mute();
+            }
+            activePlayer.playVideo();
+        }
+    }
 
-            if (activePlayer && typeof activePlayer.playVideo === 'function') {
-                if (isGlobalUnmuted) {
-                    activePlayer.unMute();
-                } else {
-                    activePlayer.mute();
-                }
+    // 音声ON/OFF切り替えボタンを押した時
+    function toggleSoundGlobal() {
+        isGlobalUnmuted = !isGlobalUnmuted;
+
+        const activeIndex = heroSwiper ? heroSwiper.activeIndex : 0;
+        const activePlayerId = 'player' + (activeIndex + 1);
+        const activePlayer = players[activePlayerId];
+
+        if (activePlayer && typeof activePlayer.playVideo === 'function') {
+            if (isGlobalUnmuted) {
+                activePlayer.unMute();
                 activePlayer.playVideo();
+            } else {
+                activePlayer.mute();
             }
         }
 
-        // 音声ON/OFF切り替えボタンを押した時
-        function toggleSoundGlobal() {
-            isGlobalUnmuted = !isGlobalUnmuted;
-
-            const activeIndex = heroSwiper ? heroSwiper.activeIndex : 0;
-            const activePlayerId = 'player' + (activeIndex + 1);
-            const activePlayer = players[activePlayerId];
-
-            if (activePlayer && typeof activePlayer.playVideo === 'function') {
-                if (isGlobalUnmuted) {
-                    activePlayer.unMute();
-                    activePlayer.playVideo();
-                } else {
-                    activePlayer.mute();
-                }
+        const allBtns = document.querySelectorAll('.sound-toggle-btn');
+        allBtns.forEach(btn => {
+            if (isGlobalUnmuted) {
+                btn.classList.add('is-muted');
+                btn.innerText = '🔇 音声をOFFにする';
+            } else {
+                btn.classList.remove('is-muted');
+                btn.innerText = '🔊 音声をONにする';
             }
+        });
+    }
 
-            // すべてのボタン表記を合わせる
-            const allBtns = document.querySelectorAll('.sound-toggle-btn');
-            allBtns.forEach(btn => {
-                if (isGlobalUnmuted) {
-                    btn.classList.add('is-muted');
-                    btn.innerText = '🔇 音声をOFFにする';
-                } else {
-                    btn.classList.remove('is-muted');
-                    btn.innerText = '🔊 音声をONにする';
-                }
-            });
+    // ギャラリーの拡大表示（ライトボックス）
+    function openLightbox(imageSrc) {
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        if (lightbox && lightboxImg) {
+            lightboxImg.src = imageSrc;
+            lightbox.classList.add('is-open');
         }
-    </script>
+    }
 
-    <!-- 既存のスクリプト（WOW.jsやメニュー用） -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
-    <script>
-        new WOW().init();
-    </script>
-    <script src="js/menu.js"></script>
-</body>
-</html>
+    function closeLightbox() {
+        const lightbox = document.getElementById('lightbox');
+        if (lightbox) {
+            lightbox.classList.remove('is-open');
+        }
+    }
+</script>
+
+<!-- 既存のスクリプト（WOW.jsやメニュー用） -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+<script>
+    new WOW().init();
+</script>
+<script src="js/menu.js"></script>
