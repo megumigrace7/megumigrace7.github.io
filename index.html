@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Megumi Grace OFFICIAL SITE</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo"><a href="#hero">Megumi Grace</a></div>
+        <button class="burger" id="burger" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+        <nav class="nav" id="nav">
+            <ul>
+                <li><a href="#hero">HOME</a></li>
+                <li><a href="#profile">PROFILE</a></li>
+                <li><a href="#music">MUSIC</a></li>
+                <li><a href="#gallery">GALLERY</a></li>
+                <li><a href="#news">NEWS</a></li>
+                <li><a href="#contact">CONTACT</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+<!-- メインビジュアル（ヒーローセクション） -->
+<section id="hero" class="hero">
+    <div class="swiper hero-slider">
+        <div class="swiper-wrapper">
+            
+            <!-- スライド 1 -->
+            <div class="swiper-slide hero-slide">
+                <div class="video-container">
+                    <iframe 
+                        id="player1"
+                        src="https://www.youtube-nocookie.com/embed/pyl54VhcNn8?autoplay=1&mute=1&controls=1&loop=1&playlist=pyl54VhcNn8&playsinline=1&enablejsapi=1" 
+                        title="YouTube video player" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                    <div class="video-overlay"></div>
+                    <button type="button" class="sound-toggle-btn" onclick="toggleSoundGlobal()">
+                        🔊 音声をONにする
+                    </button>
+                </div>
+            </div>
+
+            <!-- スライド 2 -->
+            <div class="swiper-slide hero-slide">
+                <div class="video-container">
+                    <iframe 
+                        id="player2"
+                        src="https://www.youtube-nocookie.com/embed/3YfvznzVjGk?autoplay=1&mute=1&controls=1&loop=1&playlist=3YfvznzVjGk&playsinline=1&enablejsapi=1" 
+                        title="YouTube video player" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                    <div class="video-overlay"></div>
+                    <button type="button" class="sound-toggle-btn" onclick="toggleSoundGlobal()">
+                        🔊 音声をONにする
+                    </button>
+                </div>
+            </div>
+
+        </div><!-- /.swiper-wrapper -->
+
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    </div>
+</section>
+
+<section id="music" class="section music scroll-trigger">
+    <h2 class="section-title">MUSIC</h2>
+    <div class="grid music-grid">
+        <!-- 1つ目のタイトル（例：アルバム） -->
+        <div class="card">
+            <div class="jacket-img">
+                <img src="images/music/kuchizuke.png" alt="1st Album TITLE">
+            </div>
+            <h4>1st Single "くちづけ〜雅歌 1:2〜"</h4>
+            <p>2026.01.01 Release</p>
+        </div>
+
+        <!-- 2つ目のタイトル（例：シングル） -->
+        <div class="card">
+            <div class="jacket-img">
+                <img src="images/music/air.png" alt="Single TITLE">
+            </div>
+            <h4>2nd Single "Air"</h4>
+            <p>2026.05.15 Release</p>
+        </div>
+    </div>
+</section>
+
+        <section id="gallery" class="section gallery scroll-trigger">
+            <h2 class="section-title">GALLERY</h2>
+            <div class="grid gallery-grid">
+                <div class="placeholder-img">PHOTO 1</div>
+                <div class="placeholder-img">PHOTO 2</div>
+            </div>
+        </section>
+
+        <section id="news" class="section news scroll-trigger">
+            <h2 class="section-title">NEWS</h2>
+            <ul class="news-list">
+                <li><span class="date">2026.07.20</span><a href="#">全国ツアー2026 開催決定！</a></li>
+            </ul>
+        </section>
+
+        <section id="contact" class="section contact scroll-trigger">
+            <h2 class="section-title">CONTACT</h2>
+            <div class="social-links">
+                <a href="#">Instagram</a>
+                <a href="#">X (Twitter)</a>
+                <a href="#">YouTube</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 ARTIST NAME. All Rights Reserved.</p>
+    </footer>
+<!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <script>
+        let isGlobalUnmuted = false;
+        const players = {};
+        let heroSwiper;
+
+        // 1. YouTube API Ready
+        function onYouTubeIframeAPIReady() {
+            players['player1'] = new YT.Player('player1', {
+                events: { 'onReady': onPlayerReady }
+            });
+            players['player2'] = new YT.Player('player2', {
+                events: { 'onReady': onPlayerReady }
+            });
+        }
+
+        function onPlayerReady(event) {
+            event.target.mute();
+            event.target.playVideo();
+        }
+
+        // 2. Swiper 初期化
+        document.addEventListener('DOMContentLoaded', () => {
+            heroSwiper = new Swiper('.hero-slider', {
+                loop: false,     // クローン生成によるYouTubeエラーを防ぐためfalse
+                rewind: true,    // 2枚目から右を押すと滑らかに1枚目に戻る
+                speed: 800,
+                autoHeight: true, // ★追加：スライドの高さ固定（100vh等）による動画見切れを防ぎ、高さ可変にする
+                autoplay: {
+                    delay: 7000,
+                    disableOnInteraction: false,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                touchStartPreventDefault: false,
+                passiveListeners: true,
+
+                on: {
+                    slideChangeTransitionEnd: function () {
+                        if (this.updateAutoHeight) {
+                            this.updateAutoHeight(); // ★追加：スライド切り替え時に高さを自動更新
+                        }
+                        updateSlideState();
+                    }
+                }
+            });
+        });
+
+        // スライド切り替え時の動画再生制御
+        function updateSlideState() {
+            if (!heroSwiper) return;
+
+            // 全プレイヤーを一旦停止
+            Object.keys(players).forEach(id => {
+                if (players[id] && typeof players[id].pauseVideo === 'function') {
+                    players[id].pauseVideo();
+                }
+            });
+
+            // 現在表示されているスライドのプレイヤーを取得
+            const activeIndex = heroSwiper.activeIndex;
+            const activePlayerId = 'player' + (activeIndex + 1);
+            const activePlayer = players[activePlayerId];
+
+            if (activePlayer && typeof activePlayer.playVideo === 'function') {
+                if (isGlobalUnmuted) {
+                    activePlayer.unMute();
+                } else {
+                    activePlayer.mute();
+                }
+                activePlayer.playVideo();
+            }
+        }
+
+        // 音声ON/OFF切り替えボタンを押した時
+        function toggleSoundGlobal() {
+            isGlobalUnmuted = !isGlobalUnmuted;
+
+            const activeIndex = heroSwiper ? heroSwiper.activeIndex : 0;
+            const activePlayerId = 'player' + (activeIndex + 1);
+            const activePlayer = players[activePlayerId];
+
+            if (activePlayer && typeof activePlayer.playVideo === 'function') {
+                if (isGlobalUnmuted) {
+                    activePlayer.unMute();
+                    activePlayer.playVideo();
+                } else {
+                    activePlayer.mute();
+                }
+            }
+
+            // すべてのボタン表記を合わせる
+            const allBtns = document.querySelectorAll('.sound-toggle-btn');
+            allBtns.forEach(btn => {
+                if (isGlobalUnmuted) {
+                    btn.classList.add('is-muted');
+                    btn.innerText = '🔇 音声をOFFにする';
+                } else {
+                    btn.classList.remove('is-muted');
+                    btn.innerText = '🔊 音声をONにする';
+                }
+            });
+        }
+    </script>
+
+    <!-- 既存のスクリプト（WOW.jsやメニュー用） -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+    <script>
+        new WOW().init();
+    </script>
+    <script src="js/menu.js"></script>
+</body>
+</html>
